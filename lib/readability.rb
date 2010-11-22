@@ -70,6 +70,15 @@ module Readability
         cleaned_article
       end
     end
+    
+    def get_image
+      @html.css("script, style").each { |i| i.remove }
+      remove_unlikely_candidates!
+      transform_misused_divs_into_paragraphs!
+      candidates = score_paragraphs(options[:min_text_length])
+      best_candidate = select_best_candidate(candidates)
+      return best_candidate[:elem].css("img").first.attributes["src"].value
+    end
 
     def get_article(candidates, best_candidate)
       # Now that we have the top candidate, look through its siblings for content that might also be related.
